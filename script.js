@@ -1,35 +1,26 @@
 const myLibrary = [];
 
-function Book(id, title, author, genre, daysCreated) {
+function Book(id, title, author, genre, pages, daysCreated) {
 
+    this.id = id;
     this.title = title;
     this.author = author;
     this.genre = genre;
+    this.pages = pages
     this.daysCreated = daysCreated
 
 }
 
-function addBookToLibrary(title, author, genre, daysCreated=0) {
-    bookName = new Book(`bookName ${myLibrary.length}`, title, author, genre, daysCreated)
+function addBookToLibrary(title, author, genre, pages, daysCreated=0) {
+    bookName = new Book(myLibrary.length, title, author, genre, pages, daysCreated)
     myLibrary.push(bookName)
 
 }
 
-addBookToLibrary("The Lost Horizon", "James Hilton", "Adventure", 3);
-addBookToLibrary("Celestial Stories", "Aria Moon", "Fantasy", 3);
-addBookToLibrary("Deep Space Journey", "Liam Vega", "Science Fiction", 3);
+addBookToLibrary("The Lost Horizon", "James Hilton", "Adventure", 256, 3);
+addBookToLibrary("Celestial Stories", "Aria Moon", "Fantasy", 1021, 3);
+addBookToLibrary("Deep Space Journey", "Liam Vega", "Science Fiction", 732, 3);
 
-// addBookToLibrary("Mystery at Midnight", "Ella Greene", "Mystery");
-// addBookToLibrary("Whispers of Wisdom", "Sophia Brooks", "Self-Help");
-
-{/* <a href="#" class="list-group-item list-group-item-action active" aria-current="true">
-    <div class="d-flex w-100 justify-content-between">
-      <h5 class="mb-1">The Lost Horizon</h5>
-      <small>3 days ago</small>
-    </div>
-    <p class="mb-1">James Hilton</p>
-    <small>Adventure</small>
-  </a> */}
 
 function clearLibrary() {
     const bookLibrary = document.getElementsByClassName('book-library')[0];
@@ -48,9 +39,23 @@ function renderLibrary(library) {
             bookLink.classList.add("active");
         }
 
+        // Container and columns
         const bookContainer = document.createElement('div');
-        bookContainer.classList.add("d-flex", "w-100", "justify-content-between");
+        bookContainer.classList.add("d-flex", "w-100", "justify-content-between", "book-container");
 
+        const containerLeftColumn = document.createElement('div');
+        containerLeftColumn.classList.add("container-left-column");
+
+        const containerRightColumn = document.createElement('div');
+        containerRightColumn.classList.add("container-right-column");
+
+        bookLibrary.appendChild(bookLink)
+        bookLink.appendChild(bookContainer)
+        bookContainer.appendChild(containerLeftColumn);
+        bookContainer.appendChild(containerRightColumn);
+
+
+        // Book Container Elements
         const bookTitle = document.createElement('h5');
         bookTitle.classList.add("mb-1", "book-title");
         bookTitle.textContent = library[i].title;
@@ -58,6 +63,10 @@ function renderLibrary(library) {
         const daysCreated =  document.createElement('small');
         daysCreated.classList.add("days-created");
         daysCreated.textContent = `${library[i].daysCreated} days ago`;
+
+        const pages = document.createElement('small');
+        pages.classList.add("number-pages");
+        pages.textContent = `${library[i].pages} pages`
 
         const bookAuthor = document.createElement('p');
         bookAuthor.classList.add("mb-1", "book-author");
@@ -67,13 +76,24 @@ function renderLibrary(library) {
         bookGenre.classList.add('book-genre');
         bookGenre.textContent = library[i].genre
 
-        bookContainer.appendChild(bookTitle)
-        bookContainer.appendChild(daysCreated)
-        bookLink.appendChild(bookContainer)
-        bookLink.appendChild(bookAuthor)
-        bookLink.appendChild(bookGenre)
-        bookLibrary.appendChild(bookLink)
+        const deleteButton = document.createElement('button');
+        // deleteButton.setAttribute('id', deleteButoon)
+        deleteButton.style.display = 'inline';
+        deleteButton.classList.add("btn-danger")
+        deleteButton.textContent = "Delete"
+
+        deleteButton.addEventListener('click', () => deleteBook(library[i].id));
+
+        containerLeftColumn.appendChild(bookTitle);
+        containerLeftColumn.appendChild(bookAuthor);
+        containerLeftColumn.appendChild(bookGenre);
+        containerLeftColumn.appendChild(pages);
+
+        containerRightColumn.appendChild(daysCreated)
+        containerRightColumn.appendChild(deleteButton)
+        
     }
+    console.log(library)
 }
 
 const bookDialog = document.getElementById("addBookDialog");
@@ -98,23 +118,33 @@ function showDialog() {
 
 function submitBookData() {
     let bookForm = document.getElementById("bookForm");
-    bookForm.addEventListener("submit", (e) => {
-        e.preventDefault();
-        console.log("This")
-        let inputBookTitle = document.getElementById("inputBookTitle");
-        let inputBookAuthor = document.getElementById("inputBookAuthor");
-        let inputBookGenre = document.getElementById("inputBookGenre");
+    if (!bookForm.hasListener) { // Add a custom flag to check if the listener exists
+        bookForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            let inputBookTitle = document.getElementById("inputBookTitle");
+            let inputBookAuthor = document.getElementById("inputBookAuthor");
+            let inputBookGenre = document.getElementById("inputBookGenre");
+            let inputBookPages = document.getElementById("inputBookPages");
+    
+            addBookToLibrary(inputBookTitle.value, inputBookAuthor.value, inputBookGenre.value, inputBookPages.value)
+    
+            renderLibrary(myLibrary);
+    
+            bookForm.reset();
+    
+            showDialogButton = !showDialogButton
+    
+            bookDialog.close();
 
-        addBookToLibrary(inputBookTitle.value, inputBookAuthor.value, inputBookGenre.value)
+        });
+        bookForm.hasListener = true;
+    }
+}
 
-        renderLibrary(myLibrary);
-
-        bookForm.reset();
-
-        showDialogButton = !showDialogButton
-
-        bookDialog.close();
-    })
+function deleteBook(id) {
+    myLibrary.splice(id, 1)
+    renderLibrary(myLibrary);
+    showDialog(); // This will close back the dialog
 }
 
 

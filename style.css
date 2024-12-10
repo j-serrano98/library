@@ -4,3 +4,30 @@ body{
     flex-direction: column;
     gap: 2rem;
 }
+
+.container-right-column {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    border: none;
+    border-radius: 3px;
+    color: aliceblue;
+    padding: .3rem .8rem;
+
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+}
+
+.btn-primary {
+    margin-top: 10px;
+}
+
+.book-genre {
+    display: block;
+}

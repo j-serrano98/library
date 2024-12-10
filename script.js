@@ -1,25 +1,26 @@
 const myLibrary = [];
 
-function Book(id, title, author, genre, pages, daysCreated) {
+function Book(id, title, author, genre, pages, read, daysCreated) {
 
     this.id = id;
     this.title = title;
     this.author = author;
     this.genre = genre;
     this.pages = pages
-    this.daysCreated = daysCreated
+    this.daysCreated = daysCreated;
+    this.read = read;
 
 }
 
-function addBookToLibrary(title, author, genre, pages, daysCreated=0) {
-    bookName = new Book(myLibrary.length, title, author, genre, pages, daysCreated)
+function addBookToLibrary(title, author, genre, pages, read, daysCreated=0) {
+    bookName = new Book(myLibrary.length, title, author, genre, pages, read, daysCreated)
     myLibrary.push(bookName)
 
 }
 
-addBookToLibrary("The Lost Horizon", "James Hilton", "Adventure", 256, 3);
-addBookToLibrary("Celestial Stories", "Aria Moon", "Fantasy", 1021, 3);
-addBookToLibrary("Deep Space Journey", "Liam Vega", "Science Fiction", 732, 3);
+addBookToLibrary("The Lost Horizon", "James Hilton", "Adventure", 256, false, 3);
+addBookToLibrary("Celestial Stories", "Aria Moon", "Fantasy", 1021, false, 3);
+addBookToLibrary("Deep Space Journey", "Liam Vega", "Science Fiction", 732, true, 3);
 
 
 function clearLibrary() {
@@ -57,6 +58,7 @@ function renderLibrary(library) {
 
         // Book Container Elements
         const bookTitle = document.createElement('h5');
+        bookTitle.style.display = "inline"
         bookTitle.classList.add("mb-1", "book-title");
         bookTitle.textContent = library[i].title;
 
@@ -76,15 +78,23 @@ function renderLibrary(library) {
         bookGenre.classList.add('book-genre');
         bookGenre.textContent = library[i].genre
 
+        const bookRead = document.createElement("small");
+        bookRead.classList.add("book-read");
+        bookRead.textContent = library[i].read  ? "Read" : "Not Read";
+        bookRead.addEventListener('click', () => changeReadStatus(library[i].id));
+        if (library[i].read) {
+            bookRead.classList.add("read-status")
+        } else {
+            bookRead.classList.add("notread-status")
+        }
+
         const deleteButton = document.createElement('button');
-        // deleteButton.setAttribute('id', deleteButoon)
-        deleteButton.style.display = 'inline';
         deleteButton.classList.add("btn-danger")
         deleteButton.textContent = "Delete"
-
         deleteButton.addEventListener('click', () => deleteBook(library[i].id));
 
         containerLeftColumn.appendChild(bookTitle);
+        containerLeftColumn.appendChild(bookRead);
         containerLeftColumn.appendChild(bookAuthor);
         containerLeftColumn.appendChild(bookGenre);
         containerLeftColumn.appendChild(pages);
@@ -116,6 +126,23 @@ function showDialog() {
     
 }
 
+function renderDialog() {
+    const button =  document.getElementById("addBookButton");
+    const rect = button.getBoundingClientRect(); // getBoundingClientRect() returns the position of the button in the viewport
+
+    bookDialog.style.position = "absolute";
+    bookDialog.style.top = `${rect.bottom + window.scrollY + 10}px`
+
+    // if (showDialogButton) {
+    //     bookDialog.show()
+    // } else {
+    //     bookDialog.close()
+    // }
+
+    // showDialogButton = !showDialogButton
+    
+}
+
 function submitBookData() {
     let bookForm = document.getElementById("bookForm");
     if (!bookForm.hasListener) { // Add a custom flag to check if the listener exists
@@ -125,9 +152,9 @@ function submitBookData() {
             let inputBookAuthor = document.getElementById("inputBookAuthor");
             let inputBookGenre = document.getElementById("inputBookGenre");
             let inputBookPages = document.getElementById("inputBookPages");
+            let inputBookRead = document.getElementById("inputBookRead");
     
-            addBookToLibrary(inputBookTitle.value, inputBookAuthor.value, inputBookGenre.value, inputBookPages.value)
-    
+            addBookToLibrary(inputBookTitle.value, inputBookAuthor.value, inputBookGenre.value, inputBookPages.value, inputBookRead.checked)
             renderLibrary(myLibrary);
     
             bookForm.reset();
@@ -144,7 +171,13 @@ function submitBookData() {
 function deleteBook(id) {
     myLibrary.splice(id, 1)
     renderLibrary(myLibrary);
-    showDialog(); // This will close back the dialog
+    renderDialog(); // This will close back the dialog
+}
+
+function changeReadStatus(id) {
+    console.log(myLibrary[id].read)
+    myLibrary[id].read = !myLibrary[id].read
+    renderLibrary(myLibrary)
 }
 
 

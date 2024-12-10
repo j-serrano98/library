@@ -31,3 +31,24 @@ body{
 .book-genre {
     display: block;
 }
+
+.book-read {
+    margin-left: 1rem;
+    padding: .1rem .3rem;
+    border-radius: 3px;
+}
+
+.book-read:hover {
+    cursor: pointer;
+}
+
+.notread-status {
+    background-color: #e5e7eb;
+    color: #be185d;
+    
+}
+
+.read-status {
+    background-color: #2eb174;
+    color: #fff;
+}
